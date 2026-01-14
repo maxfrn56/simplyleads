@@ -1,0 +1,236 @@
+.search-history {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 20px;
+}
+
+.search-history-header {
+  margin-bottom: 2rem;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+
+.search-history-header h2 {
+  color: var(--primary);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.search-history-subtitle {
+  color: var(--text-light);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.searches-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.search-item {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-item:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.search-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.search-item-info {
+  flex: 1;
+}
+
+.search-item-title {
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.search-item-criteria {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-item-date {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.search-item-stats {
+  display: flex;
+  align-items: center;
+}
+
+.search-item-count {
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.count-number {
+  display: block;
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.count-label {
+  display: block;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.search-item-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-item-actions .btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+}
+
+.search-results-container {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.results-header h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.error-message {
+  background-color: rgba(255, 51, 102, 0.1);
+  color: var(--danger);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  border: 1px solid rgba(255, 51, 102, 0.3);
+}
+
+@media (max-width: 768px) {
+  .search-history {
+    padding: 1rem;
+  }
+
+  .search-item-header {
+    flex-direction: column;
+  }
+
+  .search-item-stats {
+    align-self: flex-start;
+  }
+
+  .search-item-actions {
+    flex-direction: column;
+  }
+
+  .search-item-actions .btn {
+    width: 100%;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .export-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .export-buttons .btn {
+    width: 100%;
+  }
+}

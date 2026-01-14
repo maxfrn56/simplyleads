@@ -1,0 +1,180 @@
+.quota-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.quota-modal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.quota-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.quota-modal-close:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.quota-modal-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.quota-modal-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.quota-modal-title {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.quota-modal-message {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.quota-modal-info {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+
+.quota-modal-info p {
+  margin: 8px 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.quota-modal-info strong {
+  color: var(--text-primary);
+}
+
+.quota-modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.quota-modal-actions .btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent-primary));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.quota-modal-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .quota-modal {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .quota-modal-content {
+    padding: 30px 20px;
+  }
+
+  .quota-modal-actions {
+    flex-direction: column;
+  }
+
+  .quota-modal-actions .btn {
+    width: 100%;
+  }
+}
