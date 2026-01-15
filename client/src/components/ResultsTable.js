@@ -40,17 +40,6 @@ const ResultsTable = ({ prospects }) => {
     return icons[platform] || <span>🔗</span>;
   };
 
-  const getSocialLabel = (platform) => {
-    const labels = {
-      facebook: 'Facebook',
-      instagram: 'Instagram',
-      linkedin: 'LinkedIn',
-      twitter: 'Twitter/X',
-      youtube: 'YouTube'
-    };
-    return labels[platform] || platform;
-  };
-
   return (
     <div className="table-container">
       <table className="table">

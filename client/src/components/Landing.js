@@ -355,8 +355,8 @@ const Landing = () => {
               </div>
               <div className="footer-column">
                 <h4>Contact</h4>
-                <a href="#">Support</a>
-                <a href="#">Nous contacter</a>
+                <a href="mailto:support@simplyleads.fr">Support</a>
+                <a href="mailto:contact@simplyleads.fr">Nous contacter</a>
               </div>
             </div>
           </div>
