@@ -39,24 +39,24 @@ router.post('/', authenticateToken, async (req, res) => {
     await quotaService.consumeRequest(userId);
 
     // Sauvegarder la recherche
-    db.run(
-      'INSERT INTO searches (user_id, profile_type, city, department, sector) VALUES (?, ?, ?, ?, ?)',
-      [userId, profileType, city || null, department || null, sector || null],
-      function(err) {
-        if (err) {
-          console.error('Erreur sauvegarde recherche:', err);
-        }
+    const searchResult = await db.run(
+      'INSERT INTO searches (user_id, profile_type, city, department, sector) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [userId, profileType, city || null, department || null, sector || null]
+    );
 
-        const searchId = this.lastID;
+    const searchId = searchResult.lastID;
 
-        // Sauvegarder les résultats
-        const stmt = db.prepare(
-          'INSERT INTO search_results (search_id, company_name, city, sector, phone, email, website_url, opportunity_type, social_media) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        );
-
-        prospects.forEach(prospect => {
+    // Sauvegarder les résultats
+    if (prospects.length > 0) {
+      // Utiliser une insertion par lot pour PostgreSQL
+      const client = await db.pool.connect();
+      try {
+        await client.query('BEGIN');
+        
+        for (const prospect of prospects) {
           const socialMediaJson = prospect.socialMedia ? JSON.stringify(prospect.socialMedia) : null;
-          stmt.run(
+          await client.query(
+            'INSERT INTO search_results (search_id, company_name, city, sector, phone, email, website_url, opportunity_type, social_media) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
             [
               searchId,
               prospect.companyName,
@@ -67,87 +67,90 @@ router.post('/', authenticateToken, async (req, res) => {
               prospect.websiteUrl,
               prospect.opportunityType,
               socialMediaJson
-            ],
-            (err) => {
-              if (err) console.error('Erreur sauvegarde résultat:', err);
-            }
+            ]
           );
-        });
-
-        stmt.finalize();
-
-        res.json({
-          searchId,
-          count: prospects.length,
-          prospects,
-          stats: {
-            totalPlacesFound: stats.totalPlacesFound,
-            sitesAnalyzed: stats.sitesAnalyzed,
-            sitesWithWebsite: stats.sitesWithWebsite,
-            resultsAfterFiltering: stats.resultsAfterFiltering,
-            searchMethod: stats.searchMethod
-          }
-        });
+        }
+        
+        await client.query('COMMIT');
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
       }
-    );
+    }
+
+    res.json({
+      searchId,
+      count: prospects.length,
+      prospects,
+      stats: {
+        totalPlacesFound: stats.totalPlacesFound,
+        sitesAnalyzed: stats.sitesAnalyzed,
+        sitesWithWebsite: stats.sitesWithWebsite,
+        resultsAfterFiltering: stats.resultsAfterFiltering,
+        searchMethod: stats.searchMethod
+      }
+    });
   } catch (error) {
     console.error('Erreur recherche:', error);
     res.status(500).json({ error: 'Erreur lors de la recherche' });
   }
 });
 
-// Historique des recherches (doit être AVANT /:searchId)
-router.get('/history', authenticateToken, (req, res) => {
-  const userId = req.user.id;
+// Historique des recherches
+router.get('/history', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
 
-  db.all(
-    `SELECT s.*, COUNT(sr.id) as result_count
-     FROM searches s
-     LEFT JOIN search_results sr ON s.id = sr.search_id
-     WHERE s.user_id = ?
-     GROUP BY s.id
-     ORDER BY s.created_at DESC
-     LIMIT 50`,
-    [userId],
-    (err, searches) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erreur lors de la récupération' });
-      }
-      res.json(searches);
-    }
-  );
+    const searches = await db.all(
+      `SELECT s.*, COUNT(sr.id) as result_count
+       FROM searches s
+       LEFT JOIN search_results sr ON s.id = sr.search_id
+       WHERE s.user_id = $1
+       GROUP BY s.id
+       ORDER BY s.created_at DESC
+       LIMIT 50`,
+      [userId]
+    );
+
+    res.json(searches);
+  } catch (error) {
+    console.error('Erreur récupération historique:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération' });
+  }
 });
 
 // Récupérer les résultats d'une recherche précédente
-router.get('/:searchId', authenticateToken, (req, res) => {
-  const { searchId } = req.params;
-  const userId = req.user.id;
+router.get('/:searchId', authenticateToken, async (req, res) => {
+  try {
+    const { searchId } = req.params;
+    const userId = req.user.id;
 
-  db.all(
-    `SELECT sr.* FROM search_results sr
-     JOIN searches s ON sr.search_id = s.id
-     WHERE s.id = ? AND s.user_id = ?`,
-    [searchId, userId],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erreur lors de la récupération' });
-      }
-      
-      // Transformer les résultats pour correspondre au format attendu
-      const formattedResults = results.map(result => ({
-        company_name: result.company_name,
-        city: result.city,
-        sector: result.sector,
-        phone: result.phone,
-        email: result.email,
-        website_url: result.website_url,
-        opportunity_type: result.opportunity_type,
-        social_media: result.social_media
-      }));
-      
-      res.json(formattedResults);
-    }
-  );
+    const results = await db.all(
+      `SELECT sr.* FROM search_results sr
+       JOIN searches s ON sr.search_id = s.id
+       WHERE s.id = $1 AND s.user_id = $2`,
+      [searchId, userId]
+    );
+    
+    // Transformer les résultats pour correspondre au format attendu
+    const formattedResults = results.map(result => ({
+      company_name: result.company_name,
+      city: result.city,
+      sector: result.sector,
+      phone: result.phone,
+      email: result.email,
+      website_url: result.website_url,
+      opportunity_type: result.opportunity_type,
+      social_media: result.social_media
+    }));
+    
+    res.json(formattedResults);
+  } catch (error) {
+    console.error('Erreur récupération résultats:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération' });
+  }
 });
 
 module.exports = router;

@@ -107,14 +107,11 @@ async function handleCheckoutCompleted(session) {
 
   // Mettre à jour le statut et la date de renouvellement
   const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
-  db.run(
+  await db.run(
     `UPDATE users 
-     SET subscription_status = ?, subscription_current_period_end = ?
-     WHERE id = ?`,
-    [subscription.status, currentPeriodEnd.toISOString(), userId],
-    (err) => {
-      if (err) console.error('Erreur mise à jour subscription:', err);
-    }
+     SET subscription_status = $1, subscription_current_period_end = $2
+     WHERE id = $3`,
+    [subscription.status, currentPeriodEnd.toISOString(), userId]
   );
 
   console.log(`✅ Abonnement créé pour l'utilisateur ${userId}: ${planType}`);
@@ -125,12 +122,7 @@ async function handleSubscriptionUpdated(subscription) {
   const customerId = subscription.customer;
   
   // Trouver l'utilisateur par customer_id
-  const user = await new Promise((resolve, reject) => {
-    db.get('SELECT id FROM users WHERE stripe_customer_id = ?', [customerId], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+  const user = await db.get('SELECT id FROM users WHERE stripe_customer_id = $1', [customerId]);
 
   if (!user) {
     console.error('Utilisateur non trouvé pour customer:', customerId);
@@ -152,14 +144,11 @@ async function handleSubscriptionUpdated(subscription) {
   }
 
   // Mettre à jour le statut
-  db.run(
+  await db.run(
     `UPDATE users 
-     SET plan_type = ?, request_limit = ?, subscription_status = ?, subscription_current_period_end = ?
-     WHERE id = ?`,
-    [planType, requestLimit, subscription.status, currentPeriodEnd.toISOString(), user.id],
-    (err) => {
-      if (err) console.error('Erreur mise à jour subscription:', err);
-    }
+     SET plan_type = $1, request_limit = $2, subscription_status = $3, subscription_current_period_end = $4
+     WHERE id = $5`,
+    [planType, requestLimit, subscription.status, currentPeriodEnd.toISOString(), user.id]
   );
 
   console.log(`✅ Abonnement mis à jour pour l'utilisateur ${user.id}: ${planType}`);
@@ -169,26 +158,18 @@ async function handleSubscriptionUpdated(subscription) {
 async function handleSubscriptionDeleted(subscription) {
   const customerId = subscription.customer;
   
-  const user = await new Promise((resolve, reject) => {
-    db.get('SELECT id FROM users WHERE stripe_customer_id = ?', [customerId], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+  const user = await db.get('SELECT id FROM users WHERE stripe_customer_id = $1', [customerId]);
 
   if (!user) return;
 
   // Revenir au plan gratuit
   await quotaService.updateUserPlan(user.id, 'free', 5, null, null);
 
-  db.run(
+  await db.run(
     `UPDATE users 
      SET subscription_status = NULL, subscription_current_period_end = NULL
-     WHERE id = ?`,
-    [user.id],
-    (err) => {
-      if (err) console.error('Erreur mise à jour subscription:', err);
-    }
+     WHERE id = $1`,
+    [user.id]
   );
 
   console.log(`✅ Abonnement annulé pour l'utilisateur ${user.id}`);
@@ -198,22 +179,14 @@ async function handleSubscriptionDeleted(subscription) {
 async function handlePaymentFailed(invoice) {
   const customerId = invoice.customer;
   
-  const user = await new Promise((resolve, reject) => {
-    db.get('SELECT id FROM users WHERE stripe_customer_id = ?', [customerId], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+  const user = await db.get('SELECT id FROM users WHERE stripe_customer_id = $1', [customerId]);
 
   if (!user) return;
 
   // Mettre à jour le statut
-  db.run(
-    `UPDATE users SET subscription_status = 'past_due' WHERE id = ?`,
-    [user.id],
-    (err) => {
-      if (err) console.error('Erreur mise à jour subscription:', err);
-    }
+  await db.run(
+    `UPDATE users SET subscription_status = 'past_due' WHERE id = $1`,
+    [user.id]
   );
 
   console.log(`⚠️ Paiement échoué pour l'utilisateur ${user.id}`);

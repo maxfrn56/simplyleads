@@ -89,21 +89,28 @@ Si le frontend ne démarre pas :
 scrapping/
 ├── server/                 # Backend Node.js/Express
 │   ├── index.js           # Point d'entrée serveur
-│   ├── database/          # Configuration base de données SQLite
+│   ├── database/          # Configuration base de données PostgreSQL
+│   │   └── db.js          # Pool PostgreSQL et initialisation
 │   ├── middleware/         # Middleware d'authentification
 │   ├── routes/             # Routes API
 │   │   ├── auth.js        # Authentification
 │   │   ├── search.js      # Recherche de prospects
 │   │   ├── export.js      # Export CSV/Excel
-│   │   └── profiles.js    # Liste des profils
+│   │   ├── profiles.js    # Liste des profils
+│   │   ├── subscription.js # Gestion abonnements
+│   │   ├── user.js        # Profil utilisateur
+│   │   └── webhooks.js    # Webhooks Stripe
 │   └── services/          # Services métier
-│       └── scraper.js      # Scraper de prospects
+│       ├── scraper.js     # Scraper de prospects
+│       ├── quota.js       # Gestion des quotas
+│       └── stripe.js      # Service Stripe
 ├── client/                 # Frontend React
 │   ├── public/
 │   └── src/
 │       ├── components/     # Composants React (Landing, Login, Dashboard, etc.)
 │       ├── utils/          # Utilitaires (API, etc.)
 │       └── App.js          # Application principale avec routing
+├── render.yaml             # Configuration Render pour déploiement
 └── package.json
 ```
 
@@ -122,8 +129,21 @@ scrapping/
 - `GET /api/export/csv/:searchId` - Export CSV (requiert auth)
 - `GET /api/export/excel/:searchId` - Export Excel (requiert auth)
 
+### Abonnements
+- `GET /api/subscription/quota` - Obtenir le quota utilisateur (requiert auth)
+- `POST /api/subscription/checkout` - Créer une session Checkout (requiert auth)
+- `POST /api/subscription/portal` - Créer une session Portal (requiert auth)
+- `GET /api/subscription/plans` - Liste des plans disponibles
+
+### Utilisateur
+- `GET /api/user/profile` - Profil complet utilisateur (requiert auth)
+- `DELETE /api/user/account` - Supprimer le compte (requiert auth)
+
 ### Profils
 - `GET /api/profiles` - Liste des profils disponibles
+
+### Webhooks
+- `POST /api/webhooks/stripe` - Webhook Stripe (pas d'auth requise, vérification signature)
 
 ## 🧩 Profils disponibles
 
@@ -143,11 +163,49 @@ Simplyleads inclut un système complet de paiement avec Stripe :
 
 Voir `STRIPE_SETUP.md` pour la configuration détaillée.
 
+## 🚀 Déploiement sur Render
+
+Le projet est configuré pour être déployé facilement sur Render avec le fichier `render.yaml`.
+
+### Étapes de déploiement
+
+1. **Connecter votre repository GitHub à Render**
+   - Allez sur https://render.com
+   - Créez un compte et connectez votre GitHub
+   - Sélectionnez votre repository `simplyleads`
+
+2. **Créer la base de données PostgreSQL**
+   - Dans Render, créez une nouvelle base PostgreSQL
+   - Notez l'URL de connexion (Internal Database URL)
+
+3. **Déployer le backend**
+   - Render détectera automatiquement le fichier `render.yaml`
+   - Configurez les variables d'environnement dans le dashboard Render :
+     - `JWT_SECRET` : Générez une clé aléatoire sécurisée
+     - `DATABASE_URL` : Utilisez l'Internal Database URL de votre base PostgreSQL
+     - `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, etc.
+     - `FRONTEND_URL` : URL de votre frontend Render
+     - `GOOGLE_PLACES_API_KEY` : (optionnel)
+
+4. **Déployer le frontend**
+   - Créez un nouveau service "Static Site" dans Render
+   - Configurez les variables d'environnement :
+     - `REACT_APP_API_URL` : URL de votre backend Render
+     - `REACT_APP_STRIPE_PUBLISHABLE_KEY` : Votre clé publique Stripe
+
+5. **Configurer Stripe Webhooks**
+   - Dans le dashboard Stripe, créez un webhook pointant vers : `https://votre-backend.onrender.com/api/webhooks/stripe`
+   - Copiez le "Signing secret" et ajoutez-le comme `STRIPE_WEBHOOK_SECRET` dans Render
+
+### Variables d'environnement requises
+
+Voir le fichier `render.yaml` pour la liste complète des variables nécessaires.
+
 ## 📝 Notes MVP
 
 - Le scraper utilise Google Places API pour rechercher des entreprises réelles
 - En cas d'absence de clé API, le système utilise des données mockées comme fallback
-- Base de données SQLite pour le MVP (facilement migrable vers PostgreSQL/MySQL)
+- Base de données PostgreSQL pour la production (compatible avec Render)
 - Authentification JWT simple (7 jours de validité)
 - Landing page intégrée dans React pour une expérience utilisateur fluide
 - Système de quotas et abonnements avec Stripe

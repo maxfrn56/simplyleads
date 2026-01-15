@@ -19,12 +19,7 @@ class StripeService {
     try {
       // Récupérer ou créer un customer Stripe
       const db = require('../database/db');
-      const user = await new Promise((resolve, reject) => {
-        db.get('SELECT stripe_customer_id, email FROM users WHERE id = ?', [userId], (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        });
-      });
+      const user = await db.get('SELECT stripe_customer_id, email FROM users WHERE id = $1', [userId]);
 
       let customerId = user.stripe_customer_id;
 
@@ -37,12 +32,7 @@ class StripeService {
         customerId = customer.id;
 
         // Sauvegarder le customer ID
-        await new Promise((resolve, reject) => {
-          db.run('UPDATE users SET stripe_customer_id = ? WHERE id = ?', [customerId, userId], (err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
+        await db.run('UPDATE users SET stripe_customer_id = $1 WHERE id = $2', [customerId, userId]);
       }
 
       // Créer la session Checkout

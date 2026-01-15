@@ -62,8 +62,26 @@ if (stripeSecretKey) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+// Middleware CORS - Configuré pour Render
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:3001'
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Autoriser les requêtes sans origine (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(null, true); // En production, vous pouvez restreindre ici
+    }
+  },
+  credentials: true
+}));
 
 // Webhooks Stripe (doit être AVANT express.json() pour recevoir le body brut)
 // Le body brut est nécessaire pour vérifier la signature Stripe

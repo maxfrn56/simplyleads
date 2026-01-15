@@ -12,16 +12,10 @@ router.get('/profile', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     // Récupérer les infos de base de l'utilisateur
-    const user = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT id, email, first_name, last_name, phone, plan_type, request_count, request_limit, stripe_customer_id, stripe_subscription_id, subscription_status, subscription_current_period_end, created_at FROM users WHERE id = ?',
-        [userId],
-        (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        }
-      );
-    });
+    const user = await db.get(
+      'SELECT id, email, first_name, last_name, phone, plan_type, request_count, request_limit, stripe_customer_id, stripe_subscription_id, subscription_status, subscription_current_period_end, created_at FROM users WHERE id = $1',
+      [userId]
+    );
 
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
@@ -101,16 +95,10 @@ router.delete('/account', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     // Récupérer les infos Stripe de l'utilisateur
-    const user = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT stripe_customer_id, stripe_subscription_id FROM users WHERE id = ?',
-        [userId],
-        (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        }
-      );
-    });
+    const user = await db.get(
+      'SELECT stripe_customer_id, stripe_subscription_id FROM users WHERE id = $1',
+      [userId]
+    );
 
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
@@ -138,54 +126,24 @@ router.delete('/account', authenticateToken, async (req, res) => {
       }
     }
 
-    // Supprimer toutes les recherches et résultats associés
-    await new Promise((resolve, reject) => {
-      db.serialize(() => {
-        // Récupérer les IDs des recherches
-        db.all('SELECT id FROM searches WHERE user_id = ?', [userId], (err, searches) => {
-          if (err) {
-            reject(err);
-            return;
-          }
+    // Supprimer toutes les recherches et résultats associés (CASCADE devrait le faire automatiquement)
+    // Mais on le fait explicitement pour être sûr
+    const searches = await db.all('SELECT id FROM searches WHERE user_id = $1', [userId]);
+    
+    if (searches.length > 0) {
+      const searchIds = searches.map(s => s.id);
+      const placeholders = searchIds.map((_, i) => `$${i + 1}`).join(',');
+      await db.run(
+        `DELETE FROM search_results WHERE search_id IN (${placeholders})`,
+        searchIds
+      );
+    }
 
-          // Supprimer les résultats de chaque recherche
-          const searchIds = searches.map(s => s.id);
-          if (searchIds.length > 0) {
-            const placeholders = searchIds.map(() => '?').join(',');
-            db.run(
-              `DELETE FROM search_results WHERE search_id IN (${placeholders})`,
-              searchIds,
-              (err) => {
-                if (err) {
-                  reject(err);
-                  return;
-                }
+    // Supprimer les recherches
+    await db.run('DELETE FROM searches WHERE user_id = $1', [userId]);
 
-                // Supprimer les recherches
-                db.run('DELETE FROM searches WHERE user_id = ?', [userId], (err) => {
-                  if (err) {
-                    reject(err);
-                    return;
-                  }
-
-                  // Supprimer l'utilisateur
-                  db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
-                    if (err) reject(err);
-                    else resolve();
-                  });
-                });
-              }
-            );
-          } else {
-            // Pas de recherches, supprimer directement l'utilisateur
-            db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
-              if (err) reject(err);
-              else resolve();
-            });
-          }
-        });
-      });
-    });
+    // Supprimer l'utilisateur
+    await db.run('DELETE FROM users WHERE id = $1', [userId]);
 
     res.json({ message: 'Compte supprimé avec succès' });
   } catch (error) {

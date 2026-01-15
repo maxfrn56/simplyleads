@@ -79,16 +79,10 @@ router.post('/portal', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     
     // Récupérer les infos complètes de l'utilisateur
-    const user = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT stripe_customer_id, plan_type, subscription_status FROM users WHERE id = ?', 
-        [userId], 
-        (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        }
-      );
-    });
+    const user = await db.get(
+      'SELECT stripe_customer_id, plan_type, subscription_status FROM users WHERE id = $1', 
+      [userId]
+    );
 
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
