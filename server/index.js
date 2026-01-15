@@ -62,9 +62,10 @@ if (stripeSecretKey) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware CORS - Configuré pour Render
+// Middleware CORS - Configuré pour Railway
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  process.env.RAILWAY_PUBLIC_DOMAIN, // Domaine Railway du frontend
   'http://localhost:3000',
   'http://localhost:3001'
 ].filter(Boolean);
@@ -73,6 +74,11 @@ app.use(cors({
   origin: function (origin, callback) {
     // Autoriser les requêtes sans origine (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
+    
+    // Autoriser les domaines Railway (.railway.app)
+    if (origin && origin.includes('.railway.app')) {
+      return callback(null, true);
+    }
     
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
       callback(null, true);

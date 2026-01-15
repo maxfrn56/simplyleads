@@ -163,49 +163,115 @@ Simplyleads inclut un système complet de paiement avec Stripe :
 
 Voir `STRIPE_SETUP.md` pour la configuration détaillée.
 
-## 🚀 Déploiement sur Render
+## 🚀 Déploiement sur Railway
 
-Le projet est configuré pour être déployé facilement sur Render avec le fichier `render.yaml`.
+Le projet est configuré pour être déployé facilement sur Railway. Railway détecte automatiquement les projets Node.js et gère le déploiement sans configuration complexe.
 
 ### Étapes de déploiement
 
-1. **Connecter votre repository GitHub à Render**
-   - Allez sur https://render.com
-   - Créez un compte et connectez votre GitHub
-   - Sélectionnez votre repository `simplyleads`
+1. **Créer un compte Railway et connecter GitHub**
+   - Allez sur https://railway.app
+   - Créez un compte (avec GitHub recommandé)
+   - Cliquez sur "New Project"
+   - Sélectionnez "Deploy from GitHub repo"
+   - Choisissez votre repository `simplyleads`
 
 2. **Créer la base de données PostgreSQL**
-   - Dans Render, créez une nouvelle base PostgreSQL
-   - Notez l'URL de connexion (Internal Database URL)
+   - Dans votre projet Railway, cliquez sur "+ New"
+   - Sélectionnez "Database" → "Add PostgreSQL"
+   - Railway créera automatiquement une base PostgreSQL
+   - La variable `DATABASE_URL` sera automatiquement ajoutée à vos variables d'environnement
 
-3. **Déployer le backend**
-   - Render détectera automatiquement le fichier `render.yaml`
-   - Configurez les variables d'environnement dans le dashboard Render :
-     - `JWT_SECRET` : Générez une clé aléatoire sécurisée
-     - `DATABASE_URL` : Utilisez l'Internal Database URL de votre base PostgreSQL
-     - `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, etc.
-     - `FRONTEND_URL` : URL de votre frontend Render
-     - `GOOGLE_PLACES_API_KEY` : (optionnel)
+3. **Configurer le service backend**
+   - Railway détectera automatiquement votre projet Node.js
+   - Le service backend sera créé automatiquement
+   - Configurez les variables d'environnement dans l'onglet "Variables" :
+     
+     **Obligatoires :**
+     - `NODE_ENV` = `production`
+     - `PORT` = Railway définit automatiquement le PORT (pas besoin de le définir manuellement)
+     - `JWT_SECRET` = Générez une clé aléatoire sécurisée (ex: `openssl rand -base64 32`)
+     - `DATABASE_URL` = Déjà configuré automatiquement par Railway (depuis la base PostgreSQL)
+     
+     **Stripe (obligatoire pour les paiements) :**
+     - `STRIPE_SECRET_KEY` = votre clé secrète Stripe (ex: `sk_test_...`)
+     - `STRIPE_PUBLISHABLE_KEY` = votre clé publique Stripe (ex: `pk_test_...`)
+     - `STRIPE_PRICE_STARTER` = l'ID du prix Starter dans Stripe (ex: `price_...`)
+     - `STRIPE_PRICE_PRO` = l'ID du prix Pro dans Stripe (ex: `price_...`)
+     - `STRIPE_WEBHOOK_SECRET` = vous le récupérerez après avoir créé le webhook (étape 5)
+     
+     **URLs (à configurer après le déploiement du frontend) :**
+     - `FRONTEND_URL` = URL de votre frontend Railway (ex: `https://simplyleads-frontend.railway.app`)
+     
+     **Optionnel :**
+     - `GOOGLE_PLACES_API_KEY` = votre clé API Google Places (si vous en avez une)
 
 4. **Déployer le frontend**
-   - Créez un nouveau service "Static Site" dans Render
-   - Configurez les variables d'environnement :
-     - `REACT_APP_API_URL` : URL de votre backend Render
-     - `REACT_APP_STRIPE_PUBLISHABLE_KEY` : Votre clé publique Stripe
+   - Dans votre projet Railway, cliquez sur "+ New"
+   - Sélectionnez "GitHub Repo" et choisissez le même repository
+   - Railway créera un nouveau service
+   - Dans les paramètres du service frontend :
+     - **Root Directory** : `client`
+     - **Build Command** : `npm install && npm run build`
+     - **Start Command** : `npx serve -s build` (ou utilisez un service statique)
+   - **Alternative (recommandée)** : Utilisez Railway Static pour servir le build React
+     - Créez un nouveau service "Static"
+     - Configurez le dossier de build : `client/build`
+   - Variables d'environnement pour le build :
+     - `REACT_APP_API_URL` = URL de votre backend Railway (ex: `https://simplyleads-backend.railway.app`)
+     - `REACT_APP_STRIPE_PUBLISHABLE_KEY` = votre clé publique Stripe
 
-5. **Configurer Stripe Webhooks**
-   - Dans le dashboard Stripe, créez un webhook pointant vers : `https://votre-backend.onrender.com/api/webhooks/stripe`
-   - Copiez le "Signing secret" et ajoutez-le comme `STRIPE_WEBHOOK_SECRET` dans Render
+5. **Configurer les domaines publics**
+   - Pour chaque service (backend et frontend), allez dans "Settings" → "Generate Domain"
+   - Railway générera automatiquement un domaine `.railway.app`
+   - Notez ces URLs pour les variables d'environnement
+
+6. **Mettre à jour les variables d'environnement**
+   - Retournez dans les variables du backend
+   - Mettez à jour `FRONTEND_URL` avec l'URL du frontend Railway
+
+7. **Configurer Stripe Webhooks**
+   - Dans le dashboard Stripe, allez dans "Developers" → "Webhooks"
+   - Cliquez sur "Add endpoint"
+   - Endpoint URL : `https://votre-backend.railway.app/api/webhooks/stripe`
+     - Remplacez `votre-backend` par le nom réel de votre service backend Railway
+   - Sélectionnez les événements :
+     - `checkout.session.completed`
+     - `customer.subscription.created`
+     - `customer.subscription.updated`
+     - `customer.subscription.deleted`
+     - `invoice.payment_failed`
+   - Cliquez sur "Add endpoint"
+   - Copiez le "Signing secret" (commence par `whsec_...`)
+   - Retournez dans Railway, dans les variables d'environnement du backend
+   - Ajoutez ou mettez à jour : `STRIPE_WEBHOOK_SECRET` = le Signing secret copié
+
+8. **Vérifier le déploiement**
+   - Backend : Ouvrez `https://votre-backend.railway.app/api/health`
+     - Vous devriez voir : `{"status":"ok","message":"API is running"}`
+   - Frontend : Ouvrez l'URL de votre frontend Railway
+     - La landing page devrait s'afficher
+   - Base de données : Les tables sont créées automatiquement au premier démarrage du backend
+     - Vérifiez les logs du backend pour voir : `✅ Base de données PostgreSQL initialisée`
+
+### Avantages de Railway
+
+- ✅ Déploiement automatique à chaque push sur GitHub
+- ✅ Base de données PostgreSQL intégrée facilement
+- ✅ Variables d'environnement gérées automatiquement
+- ✅ Logs en temps réel
+- ✅ Pas de configuration complexe nécessaire
+- ✅ Plan gratuit généreux pour commencer
 
 ### Variables d'environnement requises
 
-Voir le fichier `render.yaml` pour la liste complète des variables nécessaires.
+Voir la section "Étapes de déploiement" ci-dessus pour la liste complète des variables nécessaires.
 
 ## 📝 Notes MVP
 
 - Le scraper utilise Google Places API pour rechercher des entreprises réelles
 - En cas d'absence de clé API, le système utilise des données mockées comme fallback
-- Base de données PostgreSQL pour la production (compatible avec Render)
+- Base de données PostgreSQL pour la production (compatible avec Railway)
 - Authentification JWT simple (7 jours de validité)
 - Landing page intégrée dans React pour une expérience utilisateur fluide
 - Système de quotas et abonnements avec Stripe
