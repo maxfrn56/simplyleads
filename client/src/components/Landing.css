@@ -209,24 +209,27 @@
 
 .landing-page .btn-nav {
   background: var(--primary);
-  color: var(--bg-primary);
+  color: #0a0e27;
   padding: 0.4rem 1.2rem;
   border-radius: 6px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s;
+  text-shadow: none;
 }
 
 .landing-page .btn-nav:hover {
   background: var(--primary-dark);
+  color: #0a0e27;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
 }
 
 .landing-page .navbar.scrolled .btn-nav {
   background: var(--primary);
-  color: var(--bg-primary);
+  color: #0a0e27;
+  font-weight: 600;
 }
 
 /* Hero Section */
