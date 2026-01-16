@@ -36,7 +36,22 @@ const Login = ({ setIsAuthenticated }) => {
         throw new Error('Token manquant dans la réponse');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Une erreur est survenue');
+      console.error('Erreur connexion/inscription:', err);
+      console.error('URL API utilisée:', api.defaults.baseURL);
+      console.error('Détails erreur:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText
+      });
+      
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+        setError('Impossible de se connecter au serveur. Vérifiez votre connexion et que le serveur est démarré.');
+      } else {
+        setError(`Une erreur est survenue: ${err.message || 'Erreur inconnue'}`);
+      }
     } finally {
       setLoading(false);
     }

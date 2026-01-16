@@ -1,11 +1,24 @@
 import axios from 'axios';
 
 // Configuration de base pour axios
+let baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+
+// S'assurer que l'URL se termine par /api
+if (baseURL && !baseURL.endsWith('/api')) {
+  // Si l'URL ne se termine pas par /api, l'ajouter
+  baseURL = baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api';
+}
+
+// Log pour debug (toujours afficher pour diagnostiquer)
+console.log('🔗 API Base URL configurée:', baseURL);
+console.log('🔗 REACT_APP_API_URL depuis env:', process.env.REACT_APP_API_URL);
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 secondes de timeout
 });
 
 // Intercepteur pour ajouter le token d'authentification
