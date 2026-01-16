@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLandingEffects } from './LandingEffects';
 import './Landing.css';
 
 const Landing = () => {
   useLandingEffects();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
 
   return (
     <div className="landing-page">
@@ -16,11 +25,22 @@ const Landing = () => {
               <span className="logo-icon">🎯</span>
               <span className="logo-text">Simplyleads</span>
             </div>
-            <div className="nav-links">
-              <a href="#fonctionnalites">Fonctionnalités</a>
-              <a href="#comment-ca-marche">Comment ça marche</a>
-              <a href="#metiers">Métiers</a>
-              <Link to="/login" className="btn-nav">Connexion</Link>
+            <button 
+              className="mobile-menu-toggle"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              <span className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+            <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+              <a href="#fonctionnalites" onClick={closeMobileMenu}>Fonctionnalités</a>
+              <a href="#comment-ca-marche" onClick={closeMobileMenu}>Comment ça marche</a>
+              <a href="#metiers" onClick={closeMobileMenu}>Métiers</a>
+              <Link to="/login" className="btn-nav" onClick={closeMobileMenu}>Connexion</Link>
             </div>
           </div>
         </div>

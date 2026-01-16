@@ -20,6 +20,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [quota, setQuota] = useState(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Vérifier d'abord le token
@@ -192,7 +193,18 @@ const Dashboard = ({ setIsAuthenticated }) => {
       <header className="app-header">
         <div className="header-content">
           <h1>Simplyleads</h1>
-          <div className="user-info">
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
+          <div className={`user-info ${mobileMenuOpen ? 'mobile-open' : ''}`}>
             {quota && (
               <div className="quota-info-header">
                 <span className={`plan-badge plan-${quota.planType}`}>
