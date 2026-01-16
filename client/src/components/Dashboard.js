@@ -192,18 +192,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       <header className="app-header">
         <div className="header-content">
           <h1>Simplyleads</h1>
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </button>
-          <div className={`user-info ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+          <div className="user-info">
             {quota && (
               <div className="quota-info-header">
                 <span className={`plan-badge plan-${quota.planType}`}>
