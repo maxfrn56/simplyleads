@@ -110,6 +110,24 @@ const Dashboard = ({ setIsAuthenticated }) => {
       await loadQuota();
     } catch (err) {
       console.error('Erreur recherche:', err);
+      console.error('Détails erreur:', {
+        message: err.message,
+        code: err.code,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        config: {
+          url: err.config?.url,
+          method: err.config?.method,
+          baseURL: err.config?.baseURL
+        }
+      });
+      
+      // Erreur réseau (timeout, pas de connexion, etc.)
+      if (err.code === 'ECONNABORTED' || err.message === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
+        setError('Problème de connexion. Vérifiez votre connexion internet et réessayez.');
+        return;
+      }
       
       // Erreur 403 = Quota atteint (pas une erreur d'authentification)
       if (err.response?.status === 403) {
@@ -131,9 +149,14 @@ const Dashboard = ({ setIsAuthenticated }) => {
           window.location.href = '/login';
         }, 2000);
       } 
+      // Erreur 500 = Erreur serveur
+      else if (err.response?.status === 500) {
+        setError('Erreur serveur. Veuillez réessayer dans quelques instants.');
+      }
       // Autres erreurs
       else {
-        setError(err.response?.data?.error || 'Erreur lors de la recherche');
+        const errorMessage = err.response?.data?.error || err.message || 'Erreur lors de la recherche';
+        setError(errorMessage);
       }
     } finally {
       setLoading(false);
