@@ -22,9 +22,44 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
+    // Vérifier d'abord le token
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+
+    // Ensuite vérifier les données utilisateur
     const userData = localStorage.getItem('user');
     if (userData) {
-      setUser(JSON.parse(userData));
+      // Vérifier que ce n'est pas la chaîne "undefined" ou "null"
+      if (userData === 'undefined' || userData === 'null' || userData.trim() === '') {
+        console.warn('Données utilisateur invalides dans localStorage');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+      
+      try {
+        const parsedUser = JSON.parse(userData);
+        if (parsedUser && typeof parsedUser === 'object') {
+          setUser(parsedUser);
+        } else {
+          throw new Error('Données utilisateur invalides');
+        }
+      } catch (error) {
+        console.error('Erreur parsing user data:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+    } else {
+      // Pas de données utilisateur mais on a un token, on peut continuer
+      // L'utilisateur sera chargé depuis l'API si nécessaire
+      console.warn('Pas de données utilisateur dans localStorage');
     }
 
     // Charger les profils disponibles

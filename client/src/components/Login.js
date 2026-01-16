@@ -26,9 +26,15 @@ const Login = ({ setIsAuthenticated }) => {
         : { email, password, firstName, lastName, phone };
       const response = await api.post(endpoint, payload);
 
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      setIsAuthenticated(true);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        setIsAuthenticated(true);
+      } else {
+        throw new Error('Token manquant dans la réponse');
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Une erreur est survenue');
     } finally {
