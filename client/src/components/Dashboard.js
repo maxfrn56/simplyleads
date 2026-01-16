@@ -20,7 +20,6 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [quota, setQuota] = useState(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Vérifier d'abord le token

@@ -245,7 +245,37 @@
 
 @media (max-width: 768px) {
   .profile-dropdown {
-    width: 320px;
-    right: -10px;
+    width: calc(100vw - 40px);
+    max-width: 380px;
+    right: 0;
+    left: auto;
+    position: fixed;
+    top: 70px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .profile-menu-trigger {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .profile-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .profile-header {
+    padding: 1.2rem;
+  }
+
+  .profile-details {
+    padding: 1.2rem;
+    max-height: calc(100vh - 350px);
+  }
+
+  .profile-actions {
+    padding: 1rem 1.2rem;
   }
 }
