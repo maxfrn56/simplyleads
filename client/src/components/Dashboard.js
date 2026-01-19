@@ -210,6 +210,22 @@ const Dashboard = ({ setIsAuthenticated }) => {
     return Math.min(100, (quota.requestCount / quota.requestLimit) * 100);
   };
 
+  // Scroll automatique vers la section de recherche quand un profil est sélectionné
+  useEffect(() => {
+    if (selectedProfile) {
+      // Petit délai pour s'assurer que le DOM est mis à jour
+      setTimeout(() => {
+        const searchSection = document.getElementById('search-section');
+        if (searchSection) {
+          searchSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 100);
+    }
+  }, [selectedProfile]);
+
   return (
     <div className="dashboard">
       <header className="app-header">
@@ -320,7 +336,9 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
             {selectedProfile && (
               <>
-                <SearchForm onSearch={handleSearch} loading={loading} />
+                <div id="search-section">
+                  <SearchForm onSearch={handleSearch} loading={loading} />
+                </div>
 
                 {searchResults && (
                   <div className="card">
