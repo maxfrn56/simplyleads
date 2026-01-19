@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLandingEffects } from './LandingEffects';
+import ContactForm from './ContactForm';
 import './Landing.css';
 
 const Landing = () => {
@@ -40,6 +41,7 @@ const Landing = () => {
               <a href="#fonctionnalites" onClick={closeMobileMenu}>Fonctionnalités</a>
               <a href="#comment-ca-marche" onClick={closeMobileMenu}>Comment ça marche</a>
               <a href="#metiers" onClick={closeMobileMenu}>Métiers</a>
+              <a href="#contact" onClick={closeMobileMenu}>Contact</a>
               <Link to="/login" className="btn-nav" onClick={closeMobileMenu}>Connexion</Link>
             </div>
           </div>
@@ -349,6 +351,9 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Contact Form */}
+      <ContactForm />
+
       {/* Footer */}
       <footer className="footer">
         <div className="container">
@@ -375,8 +380,8 @@ const Landing = () => {
               </div>
               <div className="footer-column">
                 <h4>Contact</h4>
+                <a href="#contact">Formulaire de contact</a>
                 <a href="mailto:support@simplyleads.fr">Support</a>
-                <a href="mailto:contact@simplyleads.fr">Nous contacter</a>
               </div>
             </div>
           </div>

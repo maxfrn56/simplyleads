@@ -151,9 +151,16 @@ router.post('/forgot-password', async (req, res) => {
 
     // Envoyer l'email de réinitialisation
     try {
-      await emailService.sendPasswordResetEmail(user.email, resetToken);
+      console.log('📧 Tentative d\'envoi email de réinitialisation à:', user.email);
+      const emailResult = await emailService.sendPasswordResetEmail(user.email, resetToken);
+      console.log('📧 Résultat envoi email:', emailResult);
     } catch (emailError) {
-      console.error('Erreur envoi email:', emailError);
+      console.error('❌ Erreur envoi email:', emailError);
+      console.error('   Détails:', {
+        message: emailError.message,
+        name: emailError.name,
+        stack: emailError.stack
+      });
       // On continue quand même, l'utilisateur peut utiliser le token depuis les logs en dev
     }
 

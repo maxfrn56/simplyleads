@@ -8,6 +8,7 @@ const profileRoutes = require('./routes/profiles');
 const subscriptionRoutes = require('./routes/subscription');
 const webhookRoutes = require('./routes/webhooks');
 const userRoutes = require('./routes/user');
+const contactRoutes = require('./routes/contact');
 
 // Charger les variables d'environnement AVANT tout autre import
 dotenv.config();
@@ -59,6 +60,27 @@ if (stripeSecretKey) {
   console.warn('   Consultez QUICK_STRIPE_SETUP.md pour configurer Stripe');
 }
 
+// Vérifier la configuration Resend
+const resendApiKey = process.env.RESEND_API_KEY;
+const resendFromEmail = process.env.RESEND_FROM_EMAIL;
+
+if (resendApiKey) {
+  if (resendApiKey.startsWith('re_')) {
+    console.log('✅ Resend configuré (clé API détectée)');
+    if (resendFromEmail) {
+      console.log('✅ RESEND_FROM_EMAIL configuré:', resendFromEmail);
+    } else {
+      console.warn('⚠️  RESEND_FROM_EMAIL non configuré, utilisation de onboarding@resend.dev');
+    }
+  } else {
+    console.warn('⚠️  RESEND_API_KEY ne semble pas valide (doit commencer par re_)');
+  }
+} else {
+  console.warn('⚠️  RESEND_API_KEY non configuré dans .env');
+  console.warn('   Les emails de réinitialisation ne seront pas envoyés');
+  console.warn('   Les liens seront affichés dans les logs uniquement');
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -103,6 +125,7 @@ app.use('/api/export', exportRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
