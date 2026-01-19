@@ -29,6 +29,7 @@ const SEO = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={fullDescription} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:alt" content="Simplyleads - Interface de prospection pour freelances montrant la recherche de prospects qualifiés" />
       <meta property="og:site_name" content="Simplyleads" />
       <meta property="og:locale" content="fr_FR" />
 
@@ -38,6 +39,7 @@ const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={fullDescription} />
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content="Simplyleads - Interface de prospection pour freelances montrant la recherche de prospects qualifiés" />
 
       {/* Mobile */}
       <meta name="viewport" content="width=device-width, initial-scale=1" />

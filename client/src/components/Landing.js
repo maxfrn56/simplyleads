@@ -111,9 +111,10 @@ const Landing = () => {
                       loop
                       muted
                       playsInline
+                      aria-label="Démonstration de Simplyleads - Interface de prospection pour freelances montrant la recherche de prospects qualifiés"
                     >
                       <source src="/videos/hero-film.mp4" type="video/mp4" />
-                      Votre navigateur ne supporte pas la vidéo.
+                      Votre navigateur ne supporte pas la vidéo. Cette vidéo présente une démonstration de l'interface Simplyleads pour la prospection de clients qualifiés.
                     </video>
                   </div>
                 </div>
