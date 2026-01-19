@@ -41,6 +41,11 @@ const ProfileMenu = ({ user, quota, onLogout }) => {
     navigate('/pricing');
   };
 
+  const handleContact = () => {
+    setIsOpen(false);
+    window.location.href = '/#contact';
+  };
+
   const handleDeleteAccount = async () => {
     const confirmDelete = window.confirm(
       'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données seront perdues.'
@@ -209,6 +214,12 @@ const ProfileMenu = ({ user, quota, onLogout }) => {
           </div>
 
           <div className="profile-actions">
+            <button 
+              className="profile-action-btn"
+              onClick={handleContact}
+            >
+              Nous contacter
+            </button>
             {(quota?.planType === 'starter' || quota?.planType === 'pro') && (
               <button 
                 className="profile-action-btn"
