@@ -5,13 +5,13 @@ import { Helmet } from 'react-helmet-async';
 const GoogleAnalytics = ({ trackingId }) => {
   const location = useLocation();
 
-  // Si pas d'ID de suivi, ne rien afficher
-  if (!trackingId) {
-    return null;
-  }
-
   // Initialiser Google Analytics au chargement
   useEffect(() => {
+    // Si pas d'ID de suivi, ne rien faire
+    if (!trackingId) {
+      return;
+    }
+
     // Charger le script gtag.js
     const script1 = document.createElement('script');
     script1.async = true;
@@ -35,16 +35,23 @@ const GoogleAnalytics = ({ trackingId }) => {
         script1.parentNode.removeChild(script1);
       }
     };
-  }, [trackingId]);
+  }, [trackingId, location.pathname, location.search]);
 
   // Mettre à jour le suivi de page lors des changements de route
   useEffect(() => {
-    if (window.gtag) {
-      window.gtag('config', trackingId, {
-        page_path: location.pathname + location.search,
-      });
+    if (!trackingId || !window.gtag) {
+      return;
     }
-  }, [location, trackingId]);
+
+    window.gtag('config', trackingId, {
+      page_path: location.pathname + location.search,
+    });
+  }, [location.pathname, location.search, trackingId]);
+
+  // Si pas d'ID de suivi, ne rien afficher
+  if (!trackingId) {
+    return null;
+  }
 
   return (
     <Helmet>
