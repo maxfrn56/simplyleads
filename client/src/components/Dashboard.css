@@ -99,9 +99,10 @@
 /* Responsive Dashboard Header */
 @media (max-width: 768px) {
   .dashboard .header-content {
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Pas de wrap pour garder logo et profil sur la même ligne */
     gap: 15px;
     align-items: center; /* Alignement vertical pour tous les éléments */
+    justify-content: space-between; /* Logo à gauche, profil à droite */
   }
 
   .dashboard .header-content h1 {
@@ -111,6 +112,7 @@
   .dashboard-logo {
     display: flex;
     align-items: center; /* Alignement vertical du logo */
+    flex-shrink: 0; /* Empêche le logo de rétrécir */
   }
   
   .dashboard-logo-img {
@@ -119,14 +121,18 @@
     min-height: 50px;
   }
 
+  .dashboard .quota-info-header {
+    display: none; /* Masquer le plan-badge et quota-text-header sur mobile */
+  }
+
   .dashboard .user-info {
     display: flex;
     align-items: center; /* Alignement vertical des éléments user-info */
-    align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
-    width: 100%;
+    flex-wrap: nowrap; /* Pas de wrap pour garder logo et profil sur la même ligne */
+    width: auto; /* Largeur automatique au lieu de 100% */
     justify-content: flex-end;
+    flex-shrink: 0; /* Empêche user-info de rétrécir */
   }
 
   .dashboard .quota-info-header {
