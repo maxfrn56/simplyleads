@@ -231,7 +231,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       <header className="app-header">
         <div className="header-content">
           <div className="dashboard-logo">
-            <img src="/images/logo-texte.png" alt="Simplyleads Logo" className="dashboard-logo-img" />
+            <img src="/images/logo-texte.png" alt="Simplyleads" className="dashboard-logo-img" />
           </div>
           <div className="user-info">
             {quota && (

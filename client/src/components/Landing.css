@@ -54,22 +54,16 @@
 .landing-page .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .landing-page .navbar.scrolled .logo {
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  /* Styles pour le logo uniquement */
 }
 
 .landing-page .logo-icon {
-  width: 80px;
-  height: 80px;
+  height: 50px; /* Hauteur fixe pour le logo avec texte */
+  width: auto; /* Largeur automatique pour garder les proportions */
   object-fit: contain;
   transition: all 0.3s ease;
 }
@@ -909,8 +903,8 @@
 }
 
 .landing-page .footer-brand .logo-icon {
-  width: 70px;
-  height: 70px;
+  height: 50px; /* Hauteur fixe pour le logo avec texte */
+  width: auto; /* Largeur automatique pour garder les proportions */
 }
 
 .landing-page .footer-brand p {
@@ -951,8 +945,8 @@
 /* Responsive */
 @media (max-width: 768px) {
   .landing-page .logo-icon {
-    width: 65px;
-    height: 65px;
+    height: 40px; /* Hauteur réduite sur mobile */
+    width: auto;
   }
   
   .landing-page .hero-content {
