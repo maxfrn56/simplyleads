@@ -68,8 +68,8 @@
 }
 
 .landing-page .logo-icon {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   transition: all 0.3s ease;
 }
@@ -909,8 +909,8 @@
 }
 
 .landing-page .footer-brand .logo-icon {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
 }
 
 .landing-page .footer-brand p {
@@ -951,8 +951,8 @@
 /* Responsive */
 @media (max-width: 768px) {
   .landing-page .logo-icon {
-    width: 50px;
-    height: 50px;
+    width: 65px;
+    height: 65px;
   }
   
   .landing-page .hero-content {
