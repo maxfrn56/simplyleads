@@ -4,7 +4,7 @@ const SEO = ({
   title, 
   description, 
   keywords, 
-  ogImage = 'https://simplyleads.fr/og-image.jpg',
+  ogImage = 'https://simplyleads.fr/images/og-image.jpg',
   ogType = 'website',
   canonicalUrl 
 }) => {
@@ -78,7 +78,7 @@ const SEO = ({
           "@type": "Organization",
           "name": "Simplyleads",
           "url": siteUrl,
-          "logo": `${siteUrl}/logo.png`,
+          "logo": `${siteUrl}/images/logo-simply.png`,
           "description": fullDescription,
           "sameAs": [
             "https://www.linkedin.com/company/simplyleads",

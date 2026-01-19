@@ -30,8 +30,7 @@ const Landing = () => {
         <div className="container">
           <div className="nav-content">
             <div className="logo">
-              <img src="/logo-simply.png" alt="Simplyleads Logo" className="logo-icon" />
-              <span className="logo-text">Simplyleads</span>
+              <img src="/images/logo-texte.png" alt="Simplyleads Logo" className="logo-icon" />
             </div>
             <button 
               className="mobile-menu-toggle"
@@ -412,8 +411,7 @@ const Landing = () => {
           <div className="footer-content">
             <div className="footer-brand">
               <div className="logo">
-                <img src="/logo-simply.png" alt="Simplyleads Logo" className="logo-icon" />
-                <span className="logo-text">Simplyleads</span>
+                <img src="/images/logo-texte.png" alt="Simplyleads Logo" className="logo-icon" />
               </div>
               <p>La prospection simplifiée pour freelances</p>
             </div>
