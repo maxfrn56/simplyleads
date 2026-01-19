@@ -1,10 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEO from './SEO';
 import './LegalPages.css';
 
 export const MentionsLegales = () => {
   return (
     <div className="legal-page">
+      <SEO 
+        title="Mentions Légales"
+        description="Mentions légales de Simplyleads - Informations sur l'éditeur, hébergement et conditions d'utilisation."
+        canonicalUrl="https://simplyleads.fr/mentions-legales"
+      />
       <div className="legal-container">
         <Link to="/" className="legal-back-link">← Retour à l'accueil</Link>
         
@@ -110,6 +116,11 @@ export const MentionsLegales = () => {
 export const RGPD = () => {
   return (
     <div className="legal-page">
+      <SEO 
+        title="RGPD"
+        description="Conformité RGPD de Simplyleads - Vos droits concernant vos données personnelles et leur traitement."
+        canonicalUrl="https://simplyleads.fr/rgpd"
+      />
       <div className="legal-container">
         <Link to="/" className="legal-back-link">← Retour à l'accueil</Link>
         
@@ -275,6 +286,11 @@ export const RGPD = () => {
 export const PolitiqueConfidentialite = () => {
   return (
     <div className="legal-page">
+      <SEO 
+        title="Politique de Confidentialité"
+        description="Politique de confidentialité de Simplyleads - Comment nous collectons, utilisons et protégeons vos données personnelles."
+        canonicalUrl="https://simplyleads.fr/politique-confidentialite"
+      />
       <div className="legal-container">
         <Link to="/" className="legal-back-link">← Retour à l'accueil</Link>
         

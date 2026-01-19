@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from './SEO';
 import './Pricing.css';
 
 const Pricing = () => {
@@ -63,6 +64,12 @@ const Pricing = () => {
 
   return (
     <div className="pricing-page">
+      <SEO 
+        title="Tarifs et Abonnements"
+        description="Choisissez le plan Simplyleads adapté à vos besoins. Plans Starter et Pro avec requêtes illimitées. Essai gratuit sans carte bancaire."
+        keywords="tarifs simplyleads, prix prospection freelance, abonnement prospection, plan starter pro"
+        canonicalUrl="https://simplyleads.fr/pricing"
+      />
       <div className="pricing-container">
         {isAuthenticated && (
           <Link to="/dashboard" className="pricing-back-button">

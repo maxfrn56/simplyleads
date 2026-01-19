@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLandingEffects } from './LandingEffects';
 import ContactForm from './ContactForm';
+import SEO from './SEO';
 import './Landing.css';
 
 const Landing = () => {
@@ -18,8 +19,14 @@ const Landing = () => {
 
   return (
     <div className="landing-page">
+      <SEO 
+        title="Accueil"
+        description="Simplyleads - La prospection simplifiée pour freelances. Trouvez des clients qualifiés sans perdre des heures. Outil de prospection B2B pour développeurs web, designers, graphistes et consultants."
+        keywords="prospection freelance, trouver clients freelance, prospection B2B, outil prospection, générer leads freelance, prospects qualifiés"
+      />
       {/* Navigation */}
-      <nav className="navbar">
+      <header>
+        <nav className="navbar" role="navigation" aria-label="Navigation principale">
         <div className="container">
           <div className="nav-content">
             <div className="logo">
@@ -47,9 +54,11 @@ const Landing = () => {
           </div>
         </div>
       </nav>
+      </header>
 
       {/* Hero Section */}
-      <section className="hero">
+      <main>
+      <section className="hero" aria-label="Section principale">
         <div className="container">
           <div className="hero-content">
             <div className="hero-text">
@@ -334,6 +343,48 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Section Contenu SEO */}
+      <section className="seo-content-section" aria-label="Informations détaillées">
+        <div className="container">
+          <article itemScope itemType="https://schema.org/Article">
+            <h2>Simplyleads : L'outil de prospection B2B pour freelances</h2>
+            <p>
+              <strong>Simplyleads</strong> est la solution de prospection simplifiée conçue spécialement pour les freelances qui souhaitent trouver des clients qualifiés sans perdre des heures en recherche manuelle. Que vous soyez développeur web, designer, graphiste, consultant ou commercial indépendant, notre plateforme vous permet d'identifier rapidement les entreprises qui ont réellement besoin de vos services.
+            </p>
+            
+            <h3>Pourquoi utiliser Simplyleads pour votre prospection freelance ?</h3>
+            <p>
+              La prospection B2B pour freelances est souvent chronophage et peu efficace. Vous passez des heures à parcourir Google, LinkedIn et les annuaires professionnels pour trouver des prospects, sans savoir s'ils ont vraiment besoin de vos services. Avec Simplyleads, fini la prospection à l'aveugle : notre algorithme analyse les sites web des entreprises et identifie automatiquement les opportunités réelles selon votre profil métier.
+            </p>
+            
+            <h3>Comment fonctionne la prospection avec Simplyleads ?</h3>
+            <p>
+              Le processus est simple et rapide. Après avoir sélectionné votre profil freelance (développeur web, web designer, graphiste, consultant ou commercial indépendant), vous lancez une recherche en indiquant la zone géographique qui vous intéresse (ville, département ou secteur d'activité). Notre système analyse alors les sites web des entreprises et détecte les opportunités spécifiques à votre métier. Vous recevez une liste de prospects qualifiés avec leurs coordonnées complètes (email, téléphone, site web) et l'opportunité identifiée, prête à être exploitée.
+            </p>
+            
+            <h3>Des opportunités adaptées à chaque profil freelance</h3>
+            <p>
+              Simplyleads détecte des opportunités différentes selon votre métier. Pour les développeurs web, nous identifions les entreprises sans site web, les sites sans HTTPS ou ceux qui n'ont qu'une présence sur les réseaux sociaux. Pour les web designers, nous repérons les sites non responsive ou avec des designs obsolètes. Les graphistes trouveront des entreprises sans logo ou avec une identité visuelle à améliorer. Les consultants identifieront les entreprises avec une présence digitale faible ou une stratégie à optimiser.
+            </p>
+            
+            <h3>Exportez vos prospects pour votre CRM</h3>
+            <p>
+              Une fois vos recherches effectuées, vous pouvez exporter vos résultats au format CSV ou Excel pour les intégrer dans votre CRM ou votre système de suivi. Plus besoin de copier-coller manuellement les coordonnées : tout est automatisé pour vous faire gagner du temps.
+            </p>
+            
+            <h3>Conforme RGPD et données publiques uniquement</h3>
+            <p>
+              Simplyleads respecte strictement le RGPD et n'utilise que des données publiques disponibles sur les sites web des entreprises. Aucune donnée personnelle n'est collectée sans consentement, et toutes les informations sont accessibles publiquement. Vous pouvez utiliser notre plateforme en toute confiance pour votre prospection freelance.
+            </p>
+            
+            <h3>Commencez gratuitement dès aujourd'hui</h3>
+            <p>
+              Rejoignez les freelances qui utilisent Simplyleads pour simplifier leur prospection et trouver des clients qualifiés. Notre plan gratuit vous offre 5 requêtes pour tester la plateforme, sans carte bancaire et sans engagement. Passez ensuite à un plan Starter (100 requêtes/mois) ou Pro (illimité) selon vos besoins.
+            </p>
+          </article>
+        </div>
+      </section>
+
       {/* CTA Final */}
       <section className="cta-final">
         <div className="container">
@@ -390,6 +441,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+      </main>
     </div>
   );
 };

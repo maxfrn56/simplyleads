@@ -788,6 +788,60 @@
   color: var(--text-light);
 }
 
+/* Section Contenu SEO */
+.landing-page .seo-content-section {
+  padding: 60px 0;
+  background: var(--bg);
+}
+
+.landing-page .seo-content-section article {
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--text-light);
+  line-height: 1.8;
+}
+
+.landing-page .seo-content-section article h2 {
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-page .seo-content-section article h3 {
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-page .seo-content-section article p {
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.landing-page .seo-content-section article strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .landing-page .seo-content-section {
+    padding: 40px 0;
+  }
+  
+  .landing-page .seo-content-section article h2 {
+    font-size: 1.75rem;
+  }
+  
+  .landing-page .seo-content-section article h3 {
+    font-size: 1.25rem;
+  }
+}
+
 /* CTA Final */
 .landing-page .cta-final {
   padding: 100px 0;

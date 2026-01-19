@@ -9,6 +9,7 @@ const subscriptionRoutes = require('./routes/subscription');
 const webhookRoutes = require('./routes/webhooks');
 const userRoutes = require('./routes/user');
 const contactRoutes = require('./routes/contact');
+const sitemapRoutes = require('./routes/sitemap');
 
 // Charger les variables d'environnement AVANT tout autre import
 dotenv.config();
@@ -126,6 +127,9 @@ app.use('/api/profiles', profileRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
+
+// Sitemap et robots.txt (doivent être accessibles publiquement)
+app.use('/', sitemapRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

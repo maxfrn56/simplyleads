@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from './SEO';
 import './Login.css';
 
 const Login = ({ setIsAuthenticated }) => {
@@ -59,6 +60,11 @@ const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div className="login-container">
+      <SEO 
+        title={isLogin ? "Connexion" : "Inscription"}
+        description={isLogin ? "Connectez-vous à votre compte Simplyleads pour accéder à vos recherches de prospects." : "Créez votre compte Simplyleads gratuitement et commencez à trouver des clients qualifiés dès aujourd'hui."}
+        canonicalUrl={`https://simplyleads.fr/login`}
+      />
       <div className="login-card">
         <Link to="/" className="back-to-home">
           ← Retour au site
