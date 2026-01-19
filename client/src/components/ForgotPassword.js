@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/forgot-password', { email });
+      await api.post('/auth/forgot-password', { email });
       setSuccess(true);
     } catch (err) {
       console.error('Erreur demande réinitialisation:', err);
