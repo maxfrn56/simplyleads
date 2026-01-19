@@ -73,6 +73,7 @@
 .dashboard-logo {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
 }
 
@@ -100,20 +101,27 @@
   .dashboard .header-content {
     flex-wrap: wrap;
     gap: 15px;
+    align-items: center; /* Alignement vertical pour tous les éléments */
   }
 
   .dashboard .header-content h1 {
     font-size: 1.2rem;
   }
   
+  .dashboard-logo {
+    display: flex;
+    align-items: center; /* Alignement vertical du logo */
+  }
+  
   .dashboard-logo-img {
-    height: 45px; /* Légèrement réduit sur mobile mais plus grand qu'avant */
+    height: 50px; /* Même taille que desktop pour meilleure visibilité */
     width: auto;
-    min-height: 45px;
+    min-height: 50px;
   }
 
   .dashboard .user-info {
     display: flex;
+    align-items: center; /* Alignement vertical des éléments user-info */
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
