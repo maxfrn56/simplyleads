@@ -30,7 +30,7 @@ const Landing = () => {
         <div className="container">
           <div className="nav-content">
             <div className="logo">
-              <span className="logo-icon">🎯</span>
+              <img src="/logo-simply.png" alt="Simplyleads Logo" className="logo-icon" />
               <span className="logo-text">Simplyleads</span>
             </div>
             <button 
@@ -412,7 +412,7 @@ const Landing = () => {
           <div className="footer-content">
             <div className="footer-brand">
               <div className="logo">
-                <span className="logo-icon">🎯</span>
+                <img src="/logo-simply.png" alt="Simplyleads Logo" className="logo-icon" />
                 <span className="logo-text">Simplyleads</span>
               </div>
               <p>La prospection simplifiée pour freelances</p>
