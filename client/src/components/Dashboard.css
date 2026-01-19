@@ -77,19 +77,15 @@
 }
 
 .dashboard-logo-img {
-  width: 80px;
-  height: 80px;
+  height: 50px; /* Même taille que la navbar */
+  width: auto; /* Largeur automatique pour garder les proportions */
   object-fit: contain;
   filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+  min-height: 50px; /* Force la taille minimale */
 }
 
 .app-header h1 {
-  color: var(--primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-  margin: 0;
-  transition: all 0.3s ease;
+  display: none; /* Le texte est maintenant dans le logo */
 }
 
 .user-info {
@@ -111,8 +107,9 @@
   }
   
   .dashboard-logo-img {
-    width: 60px;
-    height: 60px;
+    height: 45px; /* Légèrement réduit sur mobile mais plus grand qu'avant */
+    width: auto;
+    min-height: 45px;
   }
 
   .dashboard .user-info {
