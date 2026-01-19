@@ -30,7 +30,7 @@ const Landing = () => {
         <div className="container">
           <div className="nav-content">
             <div className="logo">
-              <img src="/images/logo-texte.png" alt="Simplyleads" className="logo-icon" />
+              <img src={`${process.env.PUBLIC_URL}/images/logo-texte.png`} alt="" className="logo-icon" />
             </div>
             <button 
               className="mobile-menu-toggle"
@@ -411,7 +411,7 @@ const Landing = () => {
           <div className="footer-content">
             <div className="footer-brand">
               <div className="logo">
-                <img src="/images/logo-texte.png" alt="Simplyleads" className="logo-icon" />
+                <img src={`${process.env.PUBLIC_URL}/images/logo-texte.png`} alt="" className="logo-icon" />
               </div>
               <p>La prospection simplifiée pour freelances</p>
             </div>
