@@ -68,8 +68,8 @@
 }
 
 .landing-page .logo-icon {
-  width: 32px;
-  height: 32px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   transition: all 0.3s ease;
 }
@@ -908,6 +908,11 @@
   margin-bottom: 3rem;
 }
 
+.landing-page .footer-brand .logo-icon {
+  width: 50px;
+  height: 50px;
+}
+
 .landing-page .footer-brand p {
   margin-top: 1rem;
   opacity: 0.8;
@@ -945,6 +950,11 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .landing-page .logo-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
   .landing-page .hero-content {
     grid-template-columns: 1fr;
     text-align: center;
