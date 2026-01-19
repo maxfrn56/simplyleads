@@ -7,6 +7,8 @@ import Pricing from './components/Pricing';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import { MentionsLegales, RGPD, PolitiqueConfidentialite } from './components/LegalPages';
+import GoogleAnalytics from './components/GoogleAnalytics';
+import GoogleTagManager from './components/GoogleTagManager';
 import './App.css';
 
 function App() {
@@ -23,8 +25,13 @@ function App() {
     return <div className="loading">Chargement...</div>;
   }
 
+  // ID Google Analytics depuis les variables d'environnement
+  const gaTrackingId = process.env.REACT_APP_GA_TRACKING_ID;
+
   return (
     <Router>
+      <GoogleAnalytics trackingId={gaTrackingId} />
+      <GoogleTagManager />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route
