@@ -4,6 +4,8 @@ import Landing from './components/Landing';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Pricing from './components/Pricing';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import { MentionsLegales, RGPD, PolitiqueConfidentialite } from './components/LegalPages';
 import './App.css';
 
@@ -46,6 +48,8 @@ function App() {
           }
         />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/rgpd" element={<RGPD />} />
         <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />

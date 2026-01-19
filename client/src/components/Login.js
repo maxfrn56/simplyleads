@@ -176,6 +176,14 @@ const Login = ({ setIsAuthenticated }) => {
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
             {loading ? 'Chargement...' : isLogin ? 'Se connecter' : 'Créer un compte'}
           </button>
+
+          {isLogin && (
+            <div className="forgot-password-link">
+              <Link to="/forgot-password">
+                Mot de passe oublié ?
+              </Link>
+            </div>
+          )}
         </form>
       </div>
     </div>
