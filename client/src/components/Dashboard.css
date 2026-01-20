@@ -122,7 +122,7 @@
   }
 
   .dashboard .quota-info-header {
-    display: none; /* Masquer le plan-badge et quota-text-header sur mobile */
+    display: none !important; /* Masquer le plan-badge et quota-text-header sur mobile */
   }
 
   .dashboard .user-info {
@@ -133,23 +133,6 @@
     width: auto; /* Largeur automatique au lieu de 100% */
     justify-content: flex-end;
     flex-shrink: 0; /* Empêche user-info de rétrécir */
-  }
-
-  .dashboard .quota-info-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-  }
-
-  .dashboard .quota-plan-header {
-    font-size: 0.85rem;
-  }
-
-  .dashboard .quota-text-header {
-    font-size: 0.75rem;
-    color: var(--text-light);
   }
 }
 
@@ -406,7 +389,8 @@
     flex-direction: column;
   }
 
-  .quota-info-header {
+  /* Cette règle s'applique uniquement à la carte quota dans le body, pas au header */
+  .quota-card .quota-info-header {
     flex-direction: column;
     align-items: flex-start;
     margin-right: 0;
