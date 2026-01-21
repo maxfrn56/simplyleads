@@ -16,14 +16,14 @@ const PLANS = {
   },
   starter: {
     name: 'Starter',
-    price: 9.99,
+    price: 5.99,
     priceId: process.env.STRIPE_PRICE_STARTER, // À configurer dans .env
     requestLimit: 100,
     features: ['100 requêtes/mois', 'Support email', 'Export CSV/Excel']
   },
   pro: {
     name: 'Pro',
-    price: 16.99,
+    price: 9.99,
     priceId: process.env.STRIPE_PRICE_PRO, // À configurer dans .env
     requestLimit: -1, // Illimité
     features: ['Requêtes illimitées', 'Support prioritaire', 'Export CSV/Excel', 'Badge Pro']
