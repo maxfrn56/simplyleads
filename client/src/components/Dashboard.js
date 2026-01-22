@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import ProfileSelector from './ProfileSelector';
@@ -20,6 +20,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [quota, setQuota] = useState(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     // Vérifier d'abord le token
@@ -96,6 +97,15 @@ const Dashboard = ({ setIsAuthenticated }) => {
       return;
     }
 
+    // Annuler la requête précédente si elle existe
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Créer un nouveau AbortController pour cette recherche
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     setLoading(true);
     setError('');
 
@@ -103,34 +113,45 @@ const Dashboard = ({ setIsAuthenticated }) => {
       const response = await api.post('/search', {
         ...searchData,
         profileType: selectedProfile
+      }, {
+        signal: signal
       });
+
+      // Vérifier si la requête n'a pas été annulée
+      if (signal.aborted) {
+        return;
+      }
 
       setSearchResults(response.data);
       // Recharger le quota après une recherche réussie
       await loadQuota();
     } catch (err) {
-      console.error('Erreur recherche:', err);
-      console.error('Détails erreur:', {
-        message: err.message,
-        code: err.code,
-        response: err.response?.data,
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        config: {
-          url: err.config?.url,
-          method: err.config?.method,
-          baseURL: err.config?.baseURL
-        }
-      });
+      // Ignorer les erreurs si la requête a été annulée
+      if (signal.aborted || err.name === 'AbortError' || err.code === 'ERR_CANCELED') {
+        return;
+      }
+
+      // Gestion sécurisée des erreurs pour éviter les problèmes de sérialisation
+      const errorMessage = err.message || 'Erreur inconnue';
+      const errorStatus = err.response?.status;
+      const errorData = err.response?.data;
+      
+      console.error('Erreur recherche:', errorMessage);
+      if (errorStatus) {
+        console.error('Status:', errorStatus);
+      }
+      if (errorData?.error) {
+        console.error('Message serveur:', errorData.error);
+      }
       
       // Erreur réseau (timeout, pas de connexion, etc.)
-      if (err.code === 'ECONNABORTED' || err.message === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
+      if (err.code === 'ECONNABORTED' || errorMessage === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
         setError('Problème de connexion. Vérifiez votre connexion internet et réessayez.');
         return;
       }
       
       // Erreur 403 = Quota atteint (pas une erreur d'authentification)
-      if (err.response?.status === 403) {
+      if (errorStatus === 403) {
         // Recharger le quota pour avoir les dernières données
         await loadQuota();
         
@@ -141,7 +162,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
         setError('');
       } 
       // Erreur 401 = Session expirée (vraie erreur d'authentification)
-      else if (err.response?.status === 401) {
+      else if (errorStatus === 401) {
         setError('Session expirée. Veuillez vous reconnecter.');
         setTimeout(() => {
           localStorage.removeItem('token');
@@ -150,16 +171,19 @@ const Dashboard = ({ setIsAuthenticated }) => {
         }, 2000);
       } 
       // Erreur 500 = Erreur serveur
-      else if (err.response?.status === 500) {
+      else if (errorStatus === 500) {
         setError('Erreur serveur. Veuillez réessayer dans quelques instants.');
       }
       // Autres erreurs
       else {
-        const errorMessage = err.response?.data?.error || err.message || 'Erreur lors de la recherche';
-        setError(errorMessage);
+        const finalErrorMessage = errorData?.error || errorMessage || 'Erreur lors de la recherche';
+        setError(finalErrorMessage);
       }
     } finally {
-      setLoading(false);
+      // Ne mettre loading à false que si la requête n'a pas été annulée
+      if (!signal.aborted) {
+        setLoading(false);
+      }
     }
   };
 
@@ -225,6 +249,15 @@ const Dashboard = ({ setIsAuthenticated }) => {
       }, 100);
     }
   }, [selectedProfile]);
+
+  // Nettoyer le AbortController lors du démontage
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <div className="dashboard">

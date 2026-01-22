@@ -28,6 +28,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Préserver le signal si présent (pour l'annulation des requêtes)
     return config;
   },
   (error) => {
