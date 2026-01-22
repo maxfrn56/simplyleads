@@ -191,21 +191,135 @@
   font-style: italic;
 }
 
+/* Version mobile - accordéon */
+.table-mobile {
+  display: none;
+}
+
+.mobile-prospect-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-prospect-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-prospect-header:hover {
+  background-color: var(--bg-card-hover);
+}
+
+.mobile-prospect-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.mobile-company-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.mobile-expand-icon {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.mobile-expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.mobile-prospect-details {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid var(--border-color);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.mobile-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-detail-row:last-child {
+  border-bottom: none;
+}
+
+.mobile-detail-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-detail-value {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.no-results-mobile {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px;
+  font-style: italic;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
 @media (max-width: 768px) {
-  .table {
-    font-size: 0.8rem;
+  /* Masquer le tableau desktop sur mobile */
+  .table-desktop {
+    display: none;
   }
 
-  .table th,
-  .table td {
-    padding: 8px;
+  /* Afficher la version mobile */
+  .table-mobile {
+    display: block;
   }
 
-  .social-media-links {
-    gap: 5px;
+  /* Supprimer le scroll horizontal */
+  .table-container {
+    overflow-x: visible;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Masquer la version mobile sur desktop */
+  .table-mobile {
+    display: none;
   }
 
-  .social-link {
-    font-size: 1.1rem;
+  .table-desktop {
+    display: table;
   }
 }

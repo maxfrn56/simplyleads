@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ResultsTable.css';
 
 const ResultsTable = ({ prospects }) => {
+  const [expandedRows, setExpandedRows] = useState({});
+
+  const toggleRow = (index) => {
+    setExpandedRows(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   const getBadgeClass = (opportunityType) => {
     if (opportunityType.includes('Pas de')) return 'badge-danger';
     if (opportunityType.includes('sans HTTPS') || opportunityType.includes('non')) return 'badge-warning';
@@ -42,7 +51,8 @@ const ResultsTable = ({ prospects }) => {
 
   return (
     <div className="table-container">
-      <table className="table">
+      {/* Version desktop - tableau classique */}
+      <table className="table table-desktop">
         <thead>
           <tr>
             <th>Entreprise</th>
@@ -185,6 +195,149 @@ const ResultsTable = ({ prospects }) => {
           )}
         </tbody>
       </table>
+
+      {/* Version mobile - accordéon */}
+      <div className="table-mobile">
+        {prospects.length === 0 ? (
+          <div className="no-results-mobile">
+            Aucun prospect trouvé
+          </div>
+        ) : (
+          prospects.map((prospect, index) => {
+            const socialMedia = prospect.socialMedia || {};
+            const hasSocialMedia = Object.values(socialMedia).some(url => url !== null);
+            const isExpanded = expandedRows[index];
+
+            return (
+              <div key={index} className="mobile-prospect-card">
+                <div 
+                  className="mobile-prospect-header"
+                  onClick={() => toggleRow(index)}
+                >
+                  <div className="mobile-prospect-main">
+                    <div className="mobile-company-name">{prospect.companyName}</div>
+                    <span className={`badge ${getBadgeClass(prospect.opportunityType)}`}>
+                      {prospect.opportunityType}
+                    </span>
+                  </div>
+                  <div className={`mobile-expand-icon ${isExpanded ? 'expanded' : ''}`}>
+                    ▼
+                  </div>
+                </div>
+                
+                {isExpanded && (
+                  <div className="mobile-prospect-details">
+                    <div className="mobile-detail-row">
+                      <span className="mobile-detail-label">Ville:</span>
+                      <span className="mobile-detail-value">{prospect.city || '-'}</span>
+                    </div>
+                    <div className="mobile-detail-row">
+                      <span className="mobile-detail-label">Secteur:</span>
+                      <span className="mobile-detail-value">{prospect.sector || '-'}</span>
+                    </div>
+                    {prospect.phone && (
+                      <div className="mobile-detail-row">
+                        <span className="mobile-detail-label">Téléphone:</span>
+                        <a href={`tel:${prospect.phone}`} className="contact-link phone-link">
+                          📞 {prospect.phone}
+                        </a>
+                      </div>
+                    )}
+                    {prospect.email && (
+                      <div className="mobile-detail-row">
+                        <span className="mobile-detail-label">Email:</span>
+                        <a 
+                          href={`mailto:${prospect.email}`} 
+                          className="contact-link email-link"
+                        >
+                          ✉️ {prospect.email}
+                        </a>
+                      </div>
+                    )}
+                    {prospect.websiteUrl && (
+                      <div className="mobile-detail-row">
+                        <span className="mobile-detail-label">Site web:</span>
+                        <a
+                          href={prospect.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="website-link"
+                        >
+                          🌐 {prospect.websiteUrl.length > 30
+                            ? `${prospect.websiteUrl.substring(0, 30)}...`
+                            : prospect.websiteUrl}
+                        </a>
+                      </div>
+                    )}
+                    {hasSocialMedia && (
+                      <div className="mobile-detail-row">
+                        <span className="mobile-detail-label">Réseaux sociaux:</span>
+                        <div className="social-media-links">
+                          {socialMedia.facebook && (
+                            <a
+                              href={socialMedia.facebook}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="social-link facebook"
+                              title="Facebook"
+                            >
+                              {getSocialIcon('facebook')}
+                            </a>
+                          )}
+                          {socialMedia.instagram && (
+                            <a
+                              href={socialMedia.instagram}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="social-link instagram"
+                              title="Instagram"
+                            >
+                              {getSocialIcon('instagram')}
+                            </a>
+                          )}
+                          {socialMedia.linkedin && (
+                            <a
+                              href={socialMedia.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="social-link linkedin"
+                              title="LinkedIn"
+                            >
+                              {getSocialIcon('linkedin')}
+                            </a>
+                          )}
+                          {socialMedia.twitter && (
+                            <a
+                              href={socialMedia.twitter}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="social-link twitter"
+                              title="Twitter/X"
+                            >
+                              {getSocialIcon('twitter')}
+                            </a>
+                          )}
+                          {socialMedia.youtube && (
+                            <a
+                              href={socialMedia.youtube}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="social-link youtube"
+                              title="YouTube"
+                            >
+                              {getSocialIcon('youtube')}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };
