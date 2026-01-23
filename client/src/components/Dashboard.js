@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api, { searchApi } from '../utils/api';
 import ProfileSelector from './ProfileSelector';
 import SearchForm from './SearchForm';
 import ResultsTable from './ResultsTable';
@@ -110,7 +110,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
     setError('');
 
     try {
-      const response = await api.post('/search', {
+      // Utiliser searchApi qui a un timeout de 2 minutes au lieu de 30 secondes
+      const response = await searchApi.post('/search', {
         ...searchData,
         profileType: selectedProfile
       }, {
@@ -145,7 +146,73 @@ const Dashboard = ({ setIsAuthenticated }) => {
       }
       
       // Erreur réseau (timeout, pas de connexion, etc.)
-      if (err.code === 'ECONNABORTED' || errorMessage === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
+      // Vérifier si c'est vraiment un problème réseau ou juste un timeout
+      if (err.code === 'ECONNABORTED') {
+        // Timeout - la recherche peut quand même être en cours côté serveur
+        // Ne pas afficher d'erreur immédiatement, vérifier d'abord si la recherche est dans l'historique
+        console.warn('Timeout de la requête, mais la recherche peut être en cours côté serveur');
+        
+        // Fonction pour vérifier l'historique et récupérer les résultats
+        const checkHistoryAndLoadResults = async (attempt = 1, maxAttempts = 3) => {
+          try {
+            // Vérifier si la recherche a été sauvegardée dans l'historique
+            const historyResponse = await api.get('/search/history');
+            if (historyResponse.data && historyResponse.data.length > 0) {
+              // La recherche a été sauvegardée, récupérer les résultats
+              const latestSearch = historyResponse.data[0];
+              if (latestSearch.id) {
+                try {
+                  const resultsResponse = await api.get(`/search/${latestSearch.id}`);
+                  if (resultsResponse.data && resultsResponse.data.length > 0) {
+                    // Transformer les résultats pour correspondre au format attendu
+                    const formattedResults = resultsResponse.data.map(result => ({
+                      companyName: result.company_name,
+                      city: result.city,
+                      sector: result.sector,
+                      phone: result.phone,
+                      email: result.email,
+                      websiteUrl: result.website_url,
+                      opportunityType: result.opportunity_type,
+                      socialMedia: result.social_media ? (typeof result.social_media === 'string' ? JSON.parse(result.social_media) : result.social_media) : {}
+                    }));
+                    setSearchResults({
+                      searchId: latestSearch.id,
+                      count: formattedResults.length,
+                      prospects: formattedResults
+                    });
+                    setError(''); // Effacer l'erreur car on a récupéré les résultats
+                    await loadQuota(); // Recharger le quota
+                    return; // Succès, arrêter les tentatives
+                  }
+                } catch (e) {
+                  console.error('Erreur récupération résultats:', e);
+                }
+              }
+            }
+            
+            // Si pas encore trouvé et qu'on peut réessayer
+            if (attempt < maxAttempts) {
+              setTimeout(() => checkHistoryAndLoadResults(attempt + 1, maxAttempts), 3000);
+            } else {
+              // Après plusieurs tentatives, afficher un message informatif
+              setError('La recherche prend plus de temps que prévu. Vérifiez votre historique de recherches dans quelques instants.');
+            }
+          } catch (e) {
+            console.error('Erreur vérification historique:', e);
+            if (attempt < maxAttempts) {
+              setTimeout(() => checkHistoryAndLoadResults(attempt + 1, maxAttempts), 3000);
+            } else {
+              setError('La recherche prend plus de temps que prévu. Vérifiez votre connexion internet et réessayez.');
+            }
+          }
+        };
+        
+        // Commencer la vérification après 2 secondes
+        setTimeout(() => checkHistoryAndLoadResults(), 2000);
+        return;
+      }
+      
+      if (errorMessage === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
         setError('Problème de connexion. Vérifiez votre connexion internet et réessayez.');
         return;
       }

@@ -18,44 +18,76 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 secondes de timeout (augmenté pour mobile/connexions lentes)
+  timeout: 30000, // 30 secondes de timeout par défaut (pour les requêtes rapides)
 });
+
+// Timeout spécifique pour les recherches (2 minutes car elles peuvent prendre du temps)
+export const searchApi = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 120000, // 120 secondes (2 minutes) pour les recherches
+});
+
+// Fonction helper pour ajouter le token
+const addAuthToken = (config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+};
 
 // Intercepteur pour ajouter le token d'authentification
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    // Préserver le signal si présent (pour l'annulation des requêtes)
-    return config;
+    return addAuthToken(config);
   },
   (error) => {
     return Promise.reject(error);
   }
 );
 
+// Intercepteur pour searchApi (même configuration)
+searchApi.interceptors.request.use(
+  (config) => {
+    return addAuthToken(config);
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Fonction helper pour gérer les erreurs
+const handleError = (error) => {
+  // Erreur 401 = Session expirée (vraie erreur d'authentification)
+  if (error.response?.status === 401) {
+    console.error('Erreur authentification:', error.response?.data);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Rediriger vers login seulement si on n'est pas déjà sur la page de login
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  }
+  // Erreur 403 peut être soit authentification, soit quota atteint
+  // On laisse le composant gérer selon le contexte (quota vs auth)
+  // Ne pas rediriger automatiquement pour les 403
+  
+  return Promise.reject(error);
+};
+
 // Intercepteur pour gérer les erreurs
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Erreur 401 = Session expirée (vraie erreur d'authentification)
-    if (error.response?.status === 401) {
-      console.error('Erreur authentification:', error.response?.data);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      // Rediriger vers login seulement si on n'est pas déjà sur la page de login
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-    }
-    // Erreur 403 peut être soit authentification, soit quota atteint
-    // On laisse le composant gérer selon le contexte (quota vs auth)
-    // Ne pas rediriger automatiquement pour les 403
-    
-    return Promise.reject(error);
-  }
+  handleError
+);
+
+// Intercepteur pour searchApi (même configuration)
+searchApi.interceptors.response.use(
+  (response) => response,
+  handleError
 );
 
 export default api;

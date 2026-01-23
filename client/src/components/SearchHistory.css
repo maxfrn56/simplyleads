@@ -161,6 +161,35 @@
   font-size: 0.9rem;
 }
 
+.search-results-accordion {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 5000px;
+  }
+}
+
+.search-results-accordion .results-header {
+  margin-bottom: 1rem;
+}
+
+.search-results-accordion .results-header h3 {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 .search-results-container {
   background: var(--bg-card);
   border-radius: 12px;

@@ -6,9 +6,9 @@ import './SearchHistory.css';
 const SearchHistory = ({ onBack }) => {
   const [searches, setSearches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSearch, setSelectedSearch] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [loadingResults, setLoadingResults] = useState(false);
+  const [expandedSearches, setExpandedSearches] = useState({});
+  const [searchResultsCache, setSearchResultsCache] = useState({});
+  const [loadingResults, setLoadingResults] = useState({});
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -28,9 +28,28 @@ const SearchHistory = ({ onBack }) => {
     }
   };
 
-  const loadSearchResults = async (searchId) => {
+  const toggleSearch = async (searchId) => {
+    // Si déjà ouvert, fermer
+    if (expandedSearches[searchId]) {
+      setExpandedSearches(prev => ({
+        ...prev,
+        [searchId]: false
+      }));
+      return;
+    }
+
+    // Si les résultats sont déjà en cache, juste ouvrir
+    if (searchResultsCache[searchId]) {
+      setExpandedSearches(prev => ({
+        ...prev,
+        [searchId]: true
+      }));
+      return;
+    }
+
+    // Sinon, charger les résultats
     try {
-      setLoadingResults(true);
+      setLoadingResults(prev => ({ ...prev, [searchId]: true }));
       setError('');
       const response = await api.get(`/search/${searchId}`);
       
@@ -43,20 +62,29 @@ const SearchHistory = ({ onBack }) => {
         email: result.email,
         websiteUrl: result.website_url,
         opportunityType: result.opportunity_type,
-        socialMedia: result.social_media ? JSON.parse(result.social_media) : null
+        socialMedia: result.social_media ? (typeof result.social_media === 'string' ? JSON.parse(result.social_media) : result.social_media) : {}
       }));
 
-      setSearchResults({
-        searchId,
-        count: prospects.length,
-        prospects
-      });
-      setSelectedSearch(searchId);
+      // Mettre en cache les résultats
+      setSearchResultsCache(prev => ({
+        ...prev,
+        [searchId]: {
+          searchId,
+          count: prospects.length,
+          prospects
+        }
+      }));
+
+      // Ouvrir l'accordéon
+      setExpandedSearches(prev => ({
+        ...prev,
+        [searchId]: true
+      }));
     } catch (err) {
       console.error('Erreur chargement résultats:', err);
       setError('Erreur lors du chargement des résultats');
     } finally {
-      setLoadingResults(false);
+      setLoadingResults(prev => ({ ...prev, [searchId]: false }));
     }
   };
 
@@ -127,49 +155,6 @@ const SearchHistory = ({ onBack }) => {
     );
   }
 
-  if (selectedSearch && searchResults) {
-    return (
-      <div className="search-history">
-        <div className="search-history-header">
-          <button className="btn-back" onClick={() => {
-            setSelectedSearch(null);
-            setSearchResults(null);
-          }}>
-            ← Retour à l'historique
-          </button>
-          <h2>Résultats de la recherche</h2>
-        </div>
-
-        <div className="search-results-container">
-          <div className="results-header">
-            <h3>{searchResults.count} résultat{searchResults.count > 1 ? 's' : ''} trouvé{searchResults.count > 1 ? 's' : ''}</h3>
-            <div className="export-buttons">
-              <button
-                className="btn btn-success"
-                onClick={() => handleExport('csv', searchResults.searchId)}
-              >
-                Exporter en CSV
-              </button>
-              <button
-                className="btn btn-success"
-                onClick={() => handleExport('excel', searchResults.searchId)}
-              >
-                Exporter en Excel
-              </button>
-            </div>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          {loadingResults ? (
-            <div className="loading-state">Chargement des résultats...</div>
-          ) : (
-            <ResultsTable prospects={searchResults.prospects} />
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="search-history">
@@ -193,54 +178,76 @@ const SearchHistory = ({ onBack }) => {
         </div>
       ) : (
         <div className="searches-list">
-          {searches.map((search) => (
-            <div key={search.id} className="search-item">
-              <div className="search-item-header">
-                <div className="search-item-info">
-                  <h3 className="search-item-title">
-                    {getProfileName(search.profile_type)}
-                  </h3>
-                  <p className="search-item-criteria">
-                    {getSearchCriteria(search)}
-                  </p>
-                  <p className="search-item-date">
-                    {formatDate(search.created_at)}
-                  </p>
-                </div>
-                <div className="search-item-stats">
-                  <div className="search-item-count">
-                    <span className="count-number">{search.result_count || 0}</span>
-                    <span className="count-label">résultat{search.result_count !== 1 ? 's' : ''}</span>
+          {searches.map((search) => {
+            const isExpanded = expandedSearches[search.id];
+            const results = searchResultsCache[search.id];
+            const isLoading = loadingResults[search.id];
+
+            return (
+              <div key={search.id} className="search-item">
+                <div className="search-item-header">
+                  <div className="search-item-info">
+                    <h3 className="search-item-title">
+                      {getProfileName(search.profile_type)}
+                    </h3>
+                    <p className="search-item-criteria">
+                      {getSearchCriteria(search)}
+                    </p>
+                    <p className="search-item-date">
+                      {formatDate(search.created_at)}
+                    </p>
+                  </div>
+                  <div className="search-item-stats">
+                    <div className="search-item-count">
+                      <span className="count-number">{search.result_count || 0}</span>
+                      <span className="count-label">résultat{search.result_count !== 1 ? 's' : ''}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="search-item-actions">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => loadSearchResults(search.id)}
-                  disabled={loadingResults || (search.result_count === 0)}
-                >
-                  {loadingResults ? 'Chargement...' : 'Voir les résultats'}
-                </button>
-                {(search.result_count > 0) && (
-                  <>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => handleExport('csv', search.id)}
-                    >
-                      Export CSV
-                    </button>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => handleExport('excel', search.id)}
-                    >
-                      Export Excel
-                    </button>
-                  </>
+                <div className="search-item-actions">
+                  {(search.result_count > 0) && (
+                    <>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => toggleSearch(search.id)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Chargement...' : (isExpanded ? 'Masquer les résultats' : 'Voir les résultats')}
+                      </button>
+                      <button
+                        className="btn btn-success"
+                        onClick={() => handleExport('csv', search.id)}
+                      >
+                        Export CSV
+                      </button>
+                      <button
+                        className="btn btn-success"
+                        onClick={() => handleExport('excel', search.id)}
+                      >
+                        Export Excel
+                      </button>
+                    </>
+                  )}
+                </div>
+                
+                {/* Affichage des résultats en accordéon */}
+                {isExpanded && results && (
+                  <div className="search-results-accordion">
+                    <div className="results-header">
+                      <h3>{results.count} résultat{results.count > 1 ? 's' : ''} trouvé{results.count > 1 ? 's' : ''}</h3>
+                    </div>
+                    <ResultsTable prospects={results.prospects} />
+                  </div>
+                )}
+                
+                {isExpanded && isLoading && (
+                  <div className="search-results-accordion">
+                    <div className="loading-state">Chargement des résultats...</div>
+                  </div>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
