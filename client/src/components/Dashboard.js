@@ -7,6 +7,7 @@ import ResultsTable from './ResultsTable';
 import QuotaModal from './QuotaModal';
 import ProfileMenu from './ProfileMenu';
 import SearchHistory from './SearchHistory';
+import AdSense from './AdSense';
 import './Dashboard.css';
 
 const Dashboard = ({ setIsAuthenticated }) => {
@@ -328,6 +329,11 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
   return (
     <div className="dashboard">
+      {/* AdSense uniquement pour les utilisateurs avec plan gratuit */}
+      {quota && quota.planType === 'free' && (
+        <AdSense clientId="ca-pub-2403256547090918" />
+      )}
+      
       <header className="app-header">
         <div className="header-content">
           <div className="dashboard-logo">
